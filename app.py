@@ -8,6 +8,9 @@ from inventory import (
     delete_item
 )
 
+from external_api import get_product_by_barcode
+
+
 app = Flask(__name__)
 
 
@@ -78,6 +81,16 @@ def remove_inventory_item(item_id):
     return jsonify({
         "message": "Item deleted successfully"
     })
+
+
+@app.route("/products/barcode/<barcode>", methods=["GET"])
+def search_product_by_barcode(barcode):
+    product = get_product_by_barcode(barcode)
+
+    if product is None:
+        return jsonify({"error": "Product not found"}), 404
+
+    return jsonify(product)
 
 
 if __name__ == "__main__":
