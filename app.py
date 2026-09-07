@@ -51,24 +51,43 @@ def create_inventory_item():
                 "error": f"Missing required field: {field}"
             }), 400
 
-    item = add_item(data)
+    item = add_item(
+        data["name"],
+        data["quantity"],
+        data["price"],
+        data["barcode"]
+    )
 
     return jsonify(item), 201
 
 
-@app.route("/inventory/<int:item_id>", methods=["PATCH"])
-def patch_inventory_item(item_id):
+@app.route("/inventory/<int:item_id>", methods=["PUT", "PATCH"])
+def update_inventory_item(item_id):
     data = request.get_json()
 
     if not data:
         return jsonify({"error": "Request body is required"}), 400
 
-    item = update_item(item_id, data)
+    required_fields = ["name", "quantity", "price", "barcode"]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({
+                "error": f"Missing required field: {field}"
+            }), 400
+
+    item = update_item(
+        item_id,
+        data["name"],
+        data["quantity"],
+        data["price"],
+        data["barcode"]
+    )
 
     if item is None:
         return jsonify({"error": "Item not found"}), 404
 
-    return jsonify(item)
+    return jsonify(item), 200
 
 
 @app.route("/inventory/<int:item_id>", methods=["DELETE"])
@@ -80,7 +99,7 @@ def remove_inventory_item(item_id):
 
     return jsonify({
         "message": "Item deleted successfully"
-    })
+    }), 200
 
 
 @app.route("/products/barcode/<barcode>", methods=["GET"])
@@ -90,7 +109,24 @@ def search_product_by_barcode(barcode):
     if product is None:
         return jsonify({"error": "Product not found"}), 404
 
-    return jsonify(product)
+    return jsonify(product), 200
+
+
+@app.route("/external-api", methods=["GET"])
+def external_api():
+    barcode = request.args.get("barcode")
+
+    if barcode:
+        product = get_product_by_barcode(barcode)
+
+        if product is None:
+            return jsonify({"error": "Product not found"}), 404
+
+        return jsonify(product), 200
+
+    return jsonify({
+        "message": "External API endpoint is working"
+    }), 200
 
 
 if __name__ == "__main__":

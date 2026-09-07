@@ -4,7 +4,7 @@ import requests
 OPENFOODFACTS_URL = "https://world.openfoodfacts.org/api/v2/product"
 
 HEADERS = {
-    "User-Agent": "InventoryManagementSystem/1.0 (inventory-management-system)"
+    "User-Agent": "InventoryManagementSystem/1.0"
 }
 
 
@@ -19,17 +19,14 @@ def get_product_by_barcode(barcode):
         )
 
         if response.status_code != 200:
-            print(f"Open Food Facts API error: {response.status_code}")
             return None
 
         data = response.json()
 
-    except requests.RequestException as error:
-        print(f"Request error: {error}")
+    except requests.RequestException:
         return None
 
     except ValueError:
-        print("Invalid JSON response from Open Food Facts")
         return None
 
     if data.get("status") != 1:

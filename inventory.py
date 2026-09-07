@@ -12,6 +12,20 @@ inventory = [
         "quantity": 20,
         "price": 150.00,
         "barcode": "600100000002"
+    },
+    {
+        "id": 3,
+        "name": "Sugar",
+        "quantity": 15,
+        "price": 180.00,
+        "barcode": "600100000003"
+    },
+    {
+        "id": 4,
+        "name": "Rice",
+        "quantity": 25,
+        "price": 300.00,
+        "barcode": "600100000004"
     }
 ]
 
@@ -27,21 +41,31 @@ def get_item_by_id(item_id):
     return None
 
 
-def add_item(item):
+def add_item(name, quantity, price, barcode):
     new_id = max([item["id"] for item in inventory], default=0) + 1
-    item["id"] = new_id
-    inventory.append(item)
-    return item
+
+    new_item = {
+        "id": new_id,
+        "name": name,
+        "quantity": quantity,
+        "price": price,
+        "barcode": barcode
+    }
+
+    inventory.append(new_item)
+    return new_item
 
 
-def update_item(item_id, updates):
+def update_item(item_id, name, quantity, price, barcode):
     item = get_item_by_id(item_id)
 
     if item is None:
         return None
 
-    item.update(updates)
-    item["id"] = item_id
+    item["name"] = name
+    item["quantity"] = quantity
+    item["price"] = price
+    item["barcode"] = barcode
 
     return item
 
